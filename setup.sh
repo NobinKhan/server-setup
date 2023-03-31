@@ -1,15 +1,22 @@
 #!/bin/bash
 
-# Prompt for username and password
-echo "Create new user"
-read -p "Enter a username for the new user: " USERNAME
-read -s -p "Enter a password for the new user: " PASSWORD
+# Ask whether to create a new user
+read -p "Do you want to create a new user? (y/n) " create_user
 
-# Create the new user with the given username and password
-sudo useradd -m -p $(openssl passwd -1 $PASSWORD) $USERNAME
+if [[ $create_user == "y" ]]; then
+  # Ask for the new user's username and password
+  read -p "Enter the new username: " username
+  read -sp "Enter the new password: " password
+  echo
 
-# Add the new user to the sudo group
-sudo usermod -aG sudo $USERNAME
+  # Create the new user and set the password
+  useradd -m $username
+  echo "$username:$password" | chpasswd
+  echo "User '$username' created."
+  # Add the new user to the sudo group
+  usermod -aG sudo $username
+  echo "User '$username' added to the 'sudo' group."
+fi
 
 # Prompt the user to install Docker
 read -p "Do you want to install Docker? (y/n) " INSTALL_DOCKER
@@ -32,10 +39,6 @@ if [[ $INSTALL_DOCKER =~ ^[Yy]$ ]]; then
   docker --version
 fi
 
-# Display the new user's details
-echo ""
-echo "User $USERNAME created with password $PASSWORD"
-echo "User $USERNAME added to the sudo group"
 
 if [[ $INSTALL_DOCKER =~ ^[Yy]$ ]]; then
   echo "Docker installed successfully"
