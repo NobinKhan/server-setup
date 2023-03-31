@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Prompt for username and password
+echo "Create new user"
 read -p "Enter a username for the new user: " USERNAME
 read -s -p "Enter a password for the new user: " PASSWORD
 
